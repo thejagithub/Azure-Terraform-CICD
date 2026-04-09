@@ -3,15 +3,19 @@ variable "subscription_id" {
   default = " ## "
 }
 
+
+
 variable "ssh_public_key" {
-  type = string
-  default = " ##"
+  type    = string
+  default = " ## "
 }
+
+
 
 # variable "tags" {
 #   type = map(string)
 #   default = {
-#     environment = "shared"
+#     environment = "production"
 #     project     = "CICD"
 #     managed_by  = "terraform"
 #   }

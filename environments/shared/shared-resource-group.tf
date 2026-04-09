@@ -1,5 +1,5 @@
 data "azurerm_resource_group" "shared" {
-  name = "Task9-Thejana-Shared-RG"
+  name = "Shared-RG"
 }
 
 

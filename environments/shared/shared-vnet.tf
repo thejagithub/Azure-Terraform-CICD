@@ -1,7 +1,7 @@
 module "vnet" {
   source = "../../modules/vnet"
 
-  vnet_name           = "Task9-Thejana-Shared-Vnet"
+  vnet_name           = "Shared-Vnet"
   location            = data.azurerm_resource_group.shared.location
   resource_group_name = data.azurerm_resource_group.shared.name
   address_space       = "10.0.0.0/16"
@@ -11,14 +11,14 @@ module "vnet" {
 
   public_subnets = [
     {
-      name = "Task9-Thejana-Shared-public-subnet"
+      name = "Shared-public-subnet"
       cidr = "10.0.1.0/24"
     }
   ]
 
   private_subnets = [
     {
-      name = "Task9-Thejana-Shared-private-subnet"
+      name = "Shared-private-subnet"
       cidr = "10.0.2.0/24"
     }
   ]
@@ -127,7 +127,7 @@ module "vnet" {
   create_public_nics = true
   tags = {
     environment = "shared"
-    project     = "helloworld"
+    project     = "CICD"
     managed_by  = "terraform"
   }
 }

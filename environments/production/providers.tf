@@ -5,12 +5,13 @@ terraform {
       version = "=4.1.0"
     }
   }
-    backend "azurerm" {
-      resource_group_name  = "Shared-RG"
-      storage_account_name = "sharedstate"
-      container_name       = "tfstate"
-      key                  = "shared.terraform.tfstate"
-    }
+
+   backend "azurerm" {
+    resource_group_name  = "Production-RG"
+    storage_account_name = "prodstate"
+    container_name       = "tfstate"
+    key                  = "production.terraform.tfstate"
+  }
 }
 
 # Configure the Microsoft Azure Provider

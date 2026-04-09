@@ -1,7 +1,7 @@
 module "jenkins" {
   source = "../../modules/vm"
 
-  vm_name             = "Task9-Thejana-Shared-Jenkins-vm"
+  vm_name             = "Shared-Jenkins-vm"
   location            = data.azurerm_resource_group.shared.location
   resource_group_name = data.azurerm_resource_group.shared.name
   vm_size             = "Standard_B2s"
@@ -16,7 +16,7 @@ module "jenkins" {
 module "pritunl" {
   source = "../../modules/vm"
 
-  vm_name             = "Task9-Thejana-Shared-Pritunl-vm"
+  vm_name             = "Shared-Pritunl-vm"
   location            = data.azurerm_resource_group.shared.location
   resource_group_name = data.azurerm_resource_group.shared.name
   vm_size             = "Standard_B2s"
