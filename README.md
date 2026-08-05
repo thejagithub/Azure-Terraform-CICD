@@ -208,3 +208,7 @@ Shared must be applied first — the peering configurations in Development and P
 - **Network Security Groups** — Subnet-level rules restrict traffic to the minimum required paths between tiers.
 
 ## 📸 Screenshots
+
+<img width="1165" height="1831" alt="task9-latest" src="https://github.com/user-attachments/assets/50500118-d219-41c1-ae02-3749611de397" />
+Architecture Diagram
+
