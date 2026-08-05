@@ -20,7 +20,7 @@ This project provisions a complete multi-environment Microsoft Azure infrastruct
 
 | Layer | Tool / Technology |
 |---|---|
-| Application | Dockerized HelloWorld (monolithic) |
+| Application | Dockerized Application (monolithic) |
 | IaC | Terraform (module-based) |
 | Cloud Provider | Microsoft Azure |
 | Compute | Azure Virtual Machine Scale Sets (VMSS) |
