@@ -1,0 +1,97 @@
+pipeline {
+    agent any
+
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+    }
+
+    environment {
+        ENVIRONMENT    = "development"
+        REGISTRY_NAME  = "developmentacr"
+        REGISTRY_URL   = "developmentacr.azurecr.io"
+        REPOSITORY     = "azure-terraform-deployment"
+        IMAGE_TAG      = "${BUILD_NUMBER}"
+        RESOURCE_GROUP = "development-rg"
+        VMSS_NAME      = "development-vmss"
+        CONTAINER_NAME = "azure-terraform-deployment"
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Azure Login') {
+            steps {
+                sh 'az login --identity'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh """
+                    docker build -t ${REGISTRY_URL}/${REPOSITORY}:${IMAGE_TAG} .
+                """
+            }
+        }
+
+        stage('Login to ACR') {
+            steps {
+                sh "az acr login --name ${REGISTRY_NAME}"
+            }
+        }
+
+        stage('Push Image') {
+            steps {
+                sh "docker push ${REGISTRY_URL}/${REPOSITORY}:${IMAGE_TAG}"
+            }
+        }
+
+        stage('Deploy to VMSS') {
+            steps {
+                sh """
+                    INSTANCES=\$(az vmss list-instances \
+                        --resource-group ${RESOURCE_GROUP} \
+                        --name ${VMSS_NAME} \
+                        --query "[].instanceId" -o tsv)
+
+                    for id in \$INSTANCES
+                    do
+                        echo "Updating instance \$id"
+                        az vmss run-command invoke \
+                            --resource-group ${RESOURCE_GROUP} \
+                            --name ${VMSS_NAME} \
+                            --instance-id \$id \
+                            --command-id RunShellScript \
+                            --scripts "
+                                az login --identity &&
+                                az acr login --name ${REGISTRY_NAME} &&
+                                docker pull ${REGISTRY_URL}/${REPOSITORY}:${IMAGE_TAG} &&
+                                docker stop ${CONTAINER_NAME} || true &&
+                                docker rm ${CONTAINER_NAME} || true &&
+                                docker run -d --name ${CONTAINER_NAME} \
+                                    --restart always -p 80:80 \
+                                    ${REGISTRY_URL}/${REPOSITORY}:${IMAGE_TAG}
+                            "
+                        sleep 15
+                    done
+                """
+            }
+        }
+
+        stage('Cleanup Local Images') {
+            steps {
+                sh "docker rmi ${REGISTRY_URL}/${REPOSITORY}:${IMAGE_TAG} || true"
+            }
+        }
+    }
+
+    post {
+        success { echo "Deployed build ${IMAGE_TAG} to ${ENVIRONMENT}." }
+        failure { echo "Pipeline failed for ${ENVIRONMENT} build ${IMAGE_TAG}." }
+        always  { cleanWs() }
+    }
+}
